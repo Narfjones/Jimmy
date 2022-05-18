@@ -7,6 +7,8 @@ from multiprocessing.sharedctypes import Value
 from re import L
 import pandas as pd
 import random as r
+from collections import Counter
+from operator import itemgetter
 
 sampleDataCompare = [] # Create empty list in which to put PropertyName and MSA of sample data
 sampleData = {} # Create empty data dictionary
@@ -29,6 +31,7 @@ for dic in sampleData: # Iterate through list of dictionaries in sampleData list
     sd = [dic[key] for key in dic if key == "PropertyName" or key == "MSA"] # Create list that contains [PropertyName, MSA]
     sampleDataCompare.append(sd) # Nest [PropertyName, MSA] in larger list
 
+
 for dic in masterDict: # Iterate over entries in the master-list
     for key in dic: # stop at each dictionary and check the keys
         for i in range(len(sampleDataCompare)): # Check the key's value(MSA) against the list of sampleData values for every sample entry
@@ -37,6 +40,11 @@ for dic in masterDict: # Iterate over entries in the master-list
                 lst.append(d) # If they match, send the property name and msa value to the function
             else:
                 continue
-            
+addressLst = []
+#for dic in lst:
+    #for key in dic:
+
+sortedlst = sorted(lst, key=itemgetter("MSA"))
+
 with open('output-file.json', 'w') as fout:
-    json.dump(lst, fout)
+    json.dump(sortedlst, fout)
