@@ -7,7 +7,8 @@ from multiprocessing.sharedctypes import Value
 from re import L
 import pandas as pd
 import random as r
-from collections import Counter
+import itertools
+from anytree import Node, RenderTree
 from operator import itemgetter
 
 sampleDataCompare = [] # Create empty list in which to put PropertyName and MSA of sample data
@@ -18,7 +19,7 @@ lst = []
 f = open('CompetitorList.json')
 masterDict = json.load(f)
 
-df = pd.read_csv('Selection-Criteria.csv') # Open a csv pandas csv reader
+df = pd.read_csv('Selection-Criteria.csv', encoding='windows-1252') # Open a csv pandas csv reader
 sampleData = df.to_dict('records') # Turn pandas csv data into a list of dictionaries
   
 #---------------------------------------------------------------------------------------------------#
@@ -31,20 +32,33 @@ for dic in sampleData: # Iterate through list of dictionaries in sampleData list
     sd = [dic[key] for key in dic if key == "PropertyName" or key == "MSA"] # Create list that contains [PropertyName, MSA]
     sampleDataCompare.append(sd) # Nest [PropertyName, MSA] in larger list
 
+sampleDataCompare.sort()
 
 for dic in masterDict: # Iterate over entries in the master-list
-    for key in dic: # stop at each dictionary and check the keys
-        for i in range(len(sampleDataCompare)): # Check the key's value(MSA) against the list of sampleData values for every sample entry
-            if dic[key] == sampleDataCompare[i][1] and dic["PropertyName"] == sampleDataCompare[i][0]: # Compare key to the MSA value in the 
-                d = {"MSA":dic[key], "PropertyName":sampleDataCompare[i][0], "Address":dic['Address']}
-                lst.append(d) # If they match, send the property name and msa value to the function
+    for i in range(len(sampleDataCompare)): # Check the key's value(MSA) against the list of sampleData values for every sample entry
+        if dic["MSA"] == sampleDataCompare[i][1] and dic["PropertyName"] == sampleDataCompare[i][0]: # Compare key to the MSA value in the 
+            # d = {"MSA":dic["MSA"], "PropertyName":sampleDataCompare[i][0], "Address":dic["Address"]}
+            str1 = list(dic["MSA"])
+            str2 = list(dic["PropertyName"])
+            str3 = list(dic["Address"])
+            l = []
+            if dic["MSA"] and dic["PropertyName"] not in lst:
+                l.append(str1)
+                l.append(str2)
+                l.append(str3)
+                lst.append(l)
             else:
-                continue
-addressLst = []
-#for dic in lst:
-    #for key in dic:
+                res = lst.index(dic["MSA"])
+                l.append()
+                lst[res][0][0].append(str3)
+        else:
+            continue
 
-sortedlst = sorted(lst, key=itemgetter("MSA"))
+
+    
+
+
+# sortedlst = sorted(lst, key=itemgetter("MSA")) # Sort list alphabetically by MSA Value
 
 with open('output-file.json', 'w') as fout:
-    json.dump(sortedlst, fout)
+    json.dump(lst, fout)
