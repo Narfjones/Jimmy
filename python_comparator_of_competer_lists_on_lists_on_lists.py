@@ -111,15 +111,30 @@ def compile_dict():
                     tempDic["Address"] = l
                     comb_lst.append(tempDic)
             
+def delete_random_elems(input_list, n):
+    to_delete = set(r.sample(range(len(input_list)), n))
+    return [x for i,x in enumerate(input_list) if not i in to_delete]
+
 compile_lst()
+
+
 
 random_lst = {}
 count_dics = 0
-for entry in lst:
-    for msa in entry:
-        for property in msa:
-            for address in property:
-                # Fucking delete something until there are only 5
+for msa in lst:
+    for property in msa:
+        for address in property:
+            if type(address) == list:
+                x = len(address)
+                for i in address:
+                    if x > 5:
+                        delete_random_elems(address, 1)
+                        x -= 1
+                        print(len(address))
+                    else:
+                        continue
+
+
 
 
 with open('output-file.json', 'w') as fout:
