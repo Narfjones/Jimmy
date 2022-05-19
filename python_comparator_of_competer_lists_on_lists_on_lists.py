@@ -16,6 +16,10 @@ lst_prop_name = []
 f = open('CompetitorList.json')
 masterDict = json.load(f)
 
+for dic in masterDict:
+    dic['Address'] = str(dic["Address"] + " " + dic["city"] + " " + dic["State"] + " " + str(dic["Zipcode"]))
+
+
 df = pd.read_csv('Selection-Criteria.csv', encoding='windows-1252') # Open a csv pandas csv reader
 sampleData = df.to_dict('records') # Turn pandas csv data into a list of dictionaries
 
@@ -36,7 +40,8 @@ with open('sample_data_compare.json', 'w') as fout:
     json.dump(sampleDataCompare, fout)
 
 for dic in masterDict: # Iterate over entries in the master-list
-    lst_prop_name = [] # Resets PropertyName after each dictionary
+    # Resets PropertyName after each dictionary
+    ls_prop_name = []
     for i in range(len(sampleDataCompare)): # Check the key's value(MSA) against the list of sampleData values for every sample entry
         if dic["MSA"] == sampleDataCompare[i][1] and dic["PropertyName"] == sampleDataCompare[i][0]: # Compare key to the MSA value in the list
             # d = {"MSA":dic["MSA"], "PropertyName":sampleDataCompare[i][0], "Address":dic["Address"]}
@@ -53,21 +58,34 @@ for dic in masterDict: # Iterate over entries in the master-list
                 l2.append(str2)
                 l3.append(str3)
                 lst.append(l1)
-                for k in lst:
-                    if k == l1:
-                        k.append(l2)
-                    for p in k:
-                        if p == l2:
-                            p.append(l3)
-            elif dic["MSA"] in lst_msa and dic["PropertyName"] not in lst_prop_name:
+                for j in lst:
+                    if j == l1:
+                        j.append(l2)
+                    for k in j:
+                        if k == l2:
+                            k.append(l3)
+            elif str1 in lst_msa and str2 not in lst_prop_name:
                     lst_prop_name.append(dic["PropertyName"])
-                    for k in lst:
-                        if l1 in k:
-                            print(k.index(dic["MSA"]))
-                    
+                    l1.append(str1)
+                    l2.append(str2)
+                    l3.append(str3)
+                    for j in lst:
+                        for k in j:
+                            if k == str1 and l2 not in j:
+                                j.append(l2)
+                        for t in j:
+                            for u in t:
+                                if u == str2 and l3 not in t:
+                                    t.append(l3)                
             else:
-                for k in range(len(lst)):
-                    pass
+                l1.append(str1)
+                l2.append(str2)
+                l3.append(str3)
+                for m in lst:
+                    for n in m:
+                        for o in n:
+                            if str1 in m and str2 in n and str3 not in o and o != str2:
+                                o.append(str3)
         else:
             continue
 
