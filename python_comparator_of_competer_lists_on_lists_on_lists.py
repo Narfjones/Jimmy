@@ -5,6 +5,7 @@
 import json
 import pandas as pd
 import random as r
+from collections import defaultdict
 
 sampleDataCompare = [] # Create empty list in which to put PropertyName and MSA of sample data
 sampleData = {} # Create empty data dictionary
@@ -90,53 +91,71 @@ def compile_lst():
                 continue
 
 comb_lst = []
+
 def compile_dict():
-    for dic in masterDict: # Iterate over entries in the master-list
+    prop_lst = []
+    msa_lst = []
+    for samp in sampleData:
         tempDic = {}
-        for samp in sampleData:
+        l1 = []
+        l2 = []
+        for dic in masterDict: # Iterate over entries in the master-list
+            
             if samp["MSA"] == dic["MSA"] and samp["PropertyName"] == dic["PropertyName"]:
-                if not any(dic["MSA"] for dic in comb_lst):
+                
+                if dic["MSA"] not in msa_lst:
+                    l = []
+                    msa_lst.append(dic["MSA"])
+                    prop_lst.append(dic["PropertyName"])
+                    msa_lst.append(dic["MSA"])
+                    
                     tempDic["MSA"] = dic["MSA"]
-                    tempDic["PropertyName"] = dic["PropertyName"]
-                    tempDic["Address"] = dic["Address"]
+                    
+                    l.append(dic["PropertyName"])
+                    l2.append(dic["Address"])
+                    
+                    tempDic["Address"] = l2
+                    l1.append(l)
+                    l1[l1.index(dic["PropertyName"])].append(l2)
+                    
+                    tempDic["Properties"] = l1
+                    
                     comb_lst.append(tempDic)
-                    if dic["PropertyName"] not in dic in comb_lst:
-                        tempDic["PropertyName"] = dic["PropertyName"]
-                        tempDic["Address"] = dic["Address"]
+                    
+                    if dic["PropertyName"] not in prop_lst:
+                        
+                        l1.append(dic["PropertyName"])
+                        tempDic["Properties"] = l1
+                        
+                        l2.append(dic["Address"])
+                        tempDic["Address"] = l2
+                        
                         comb_lst.append(tempDic)
                 else:
-                    l = []
-                    l.append(comb_lst.index(tempDic["Address"]))
-                    l.append(dic["Address"])
-                    tempDic["Address"] = l
+                    l2.append(dic["Address"])
+                    tempDic["Address"] = l2
+                    
                     comb_lst.append(tempDic)
-            
-def delete_random_elems(input_list, n):
-    to_delete = set(r.sample(range(len(input_list)), n))
-    return [x for i,x in enumerate(input_list) if not i in to_delete]
-
+                
 compile_lst()
-
-
 
 random_lst = {}
 count_dics = 0
-for msa in lst:
-    for property in msa:
-        for address in property:
-            if type(address) == list:
-                x = len(address)
-                for i in address:
-                    if x > 5:
-                        delete_random_elems(address, 1)
-                        x -= 1
-                        print(len(address))
-                    else:
-                        continue
+# for msa in lst:
+#    for property in msa:
+#        for address in property:
+#            if type(address) == list:
+#                x = len(address)
+#                for i in address:
+#                    if x > 5:
+#                        x -= 1
+#                        print(len(address))
+#                    else:
+#                        continue
 
 
 
 
 with open('output-file.json', 'w') as fout:
-    json.dump(lst, fout)
+    json.dump(q, fout)
 
